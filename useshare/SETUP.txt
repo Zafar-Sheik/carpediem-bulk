@@ -1,0 +1,34 @@
+CONTACT BULK NOTIFICATION - LOCAL SETUP
+=======================================
+
+PREREQUISITES
+- Node.js 18+
+- MySQL 8.0+ running locally
+
+STEPS
+
+1. Install MySQL and create the database:
+   Open MySQL and run: CREATE DATABASE bulk_notification;
+
+2. Copy env-local.txt from this folder into the project root
+   and rename it to .env.local
+
+3. Update .env.local with your MySQL password if you have one set:
+   MYSQL_PASSWORD=yourpassword
+
+4. Install dependencies:
+   npm install
+
+5. Run the dev server:
+   npm run dev
+
+6. Open http://localhost:3000
+
+7. Admin panel is at http://localhost:3000/admin
+   Login: admin / 123456
+
+NOTES
+- The database tables are created automatically on first request.
+- Push notifications require HTTPS so they won't work on localhost
+  unless you use a tunnel (e.g. ngrok). The rest of the app works fine.
+- If MySQL is on a different port, update MYSQL_PORT in .env.local.

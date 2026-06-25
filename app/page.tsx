@@ -21,15 +21,14 @@ interface Notification {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.05,
       duration: 0.4,
       ease: 'easeOut',
     },
-  }),
+  },
 };
 
 export default function HomePage() {
@@ -334,7 +333,6 @@ export default function HomePage() {
             {notifications.map((notification, index) => (
               <motion.div
                 key={notification._id}
-                custom={index}
                 variants={cardVariants}
                 initial="hidden"
                 animate="visible"

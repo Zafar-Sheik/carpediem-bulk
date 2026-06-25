@@ -45,7 +45,7 @@ export default function HomePage() {
   const [provinceConfirm, setProvinceConfirm] = useState<string | null>(null);
   const [isChangingProvince, setIsChangingProvince] = useState(false);
   const router = useRouter();
-  const pathname = '/';
+  const pathname: string = '/';
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {

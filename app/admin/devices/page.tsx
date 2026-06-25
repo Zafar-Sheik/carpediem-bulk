@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Device {
   id: number;
@@ -19,6 +20,19 @@ interface Stats {
   byPlatform: Array<{ _id: string; count: number }>;
   byBrowser: Array<{ _id: string; count: number }>;
 }
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  }),
+};
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -155,71 +169,102 @@ export default function DevicesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Devices</h1>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">Devices</h1>
+          <p className="text-muted-text mt-1 text-sm">Manage registered devices and their access</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-400">Total Devices</p>
-              <p className="text-3xl font-bold text-white mt-1">{stats?.total || 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-5"
+      >
+        {[
+          {
+            label: 'Total Devices',
+            value: stats?.total || 0,
+            icon: (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-400">Active</p>
-              <p className="text-3xl font-bold text-green-400 mt-1">{stats?.active || 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ),
+            color: '#22438c',
+            bg: 'bg-[#22438c]/5',
+          },
+          {
+            label: 'Active',
+            value: stats?.active || 0,
+            icon: (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-400">Inactive</p>
-              <p className="text-3xl font-bold text-slate-500 mt-1">{stats?.inactive || 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-slate-700/50 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ),
+            color: '#10b981',
+            bg: 'bg-green-50',
+          },
+          {
+            label: 'Inactive',
+            value: stats?.inactive || 0,
+            icon: (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
               </svg>
+            ),
+            color: '#94a3b8',
+            bg: 'bg-slate-100',
+          },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className={`${stat.bg} border border-border rounded-2xl p-6`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-text mb-1">{stat.label}</p>
+                <p className="text-4xl font-bold text-foreground tracking-tight">{stat.value}</p>
+              </div>
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-white"
+                style={{ backgroundColor: stat.color }}
+              >
+                {stat.icon}
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
-      <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl p-4">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <span className="text-sm font-medium text-slate-300">Filters:</span>
-          </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden"
+      >
+        <div className="p-5 border-b border-border">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 text-muted-text">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span className="text-sm font-semibold">Filters:</span>
+            </div>
 
-          <div className="flex flex-wrap gap-3">
             <select
               value={platformFilter}
               onChange={(e) => { setPlatformFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:ring-2 focus:ring-[#22438c] focus:border-transparent outline-none transition-all"
             >
               <option value="">All Platforms</option>
               <option value="android">Android</option>
@@ -232,7 +277,7 @@ export default function DevicesPage() {
             <select
               value={activeFilter}
               onChange={(e) => { setActiveFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              className="px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:ring-2 focus:ring-[#22438c] focus:border-transparent outline-none transition-all"
             >
               <option value="">All Status</option>
               <option value="true">Active</option>
@@ -240,116 +285,114 @@ export default function DevicesPage() {
             </select>
           </div>
         </div>
-      </div>
 
-      {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-          <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-red-400">{error}</p>
-            <button
-              onClick={fetchDevices}
-              className="ml-auto text-sm text-red-400 hover:text-red-300 font-medium"
-            >
-              Try again
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-xl overflow-hidden">
-        {isLoading ? (
-          <div className="p-12 text-center">
-            <div className="relative w-12 h-12 mx-auto mb-4">
-              <div className="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-            </div>
-            <p className="text-slate-500">Loading devices...</p>
-          </div>
-        ) : devices.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        {error && (
+          <div className="p-4 bg-red-50 border-b border-red-200">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
+              <p className="text-red-700 text-sm">{error}</p>
+              <button onClick={fetchDevices} className="ml-auto text-sm text-red-600 hover:text-red-800 font-semibold">Retry</button>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">No devices found</h3>
-            <p className="text-slate-500 max-w-sm mx-auto">
-              {platformFilter || activeFilter ? 'No devices match your filters.' : 'No registered devices yet.'}
-            </p>
-            {(platformFilter || activeFilter) && (
-              <button
-                onClick={() => { setPlatformFilter(''); setActiveFilter(''); setPage(1); }}
-                className="mt-4 px-4 py-2 text-sm font-medium text-blue-400 hover:text-blue-300"
-              >
-                Clear filters
-              </button>
-            )}
           </div>
-        ) : (
-          <>
-            {selectedDevices.length > 0 && (
-              <div className="p-4 bg-red-500/10 border-b border-red-500/20 flex items-center justify-between">
-                <span className="text-sm font-medium text-red-400">
-                  {selectedDevices.length} device{selectedDevices.length > 1 ? 's' : ''} selected
-                </span>
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={bulkDeleteLoading}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-red-600/50 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-                >
-                  {bulkDeleteLoading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete Selected
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
+        )}
 
-            <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="p-12 text-center">
+              <div className="relative w-10 h-10 mx-auto mb-3">
+                <div className="absolute inset-0 border-3 border-slate-200 rounded-full"></div>
+                <div className="absolute inset-0 border-3 border-[#22438c] rounded-full border-t-transparent animate-spin"></div>
+              </div>
+              <p className="text-muted-text text-sm">Loading devices...</p>
+            </div>
+          ) : devices.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 bg-slate-50 border border-border rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-base font-bold text-foreground mb-1">No devices found</h3>
+              <p className="text-muted-text text-sm max-w-sm mx-auto">
+                {platformFilter || activeFilter ? 'No devices match your filters.' : 'No registered devices yet.'}
+              </p>
+              {(platformFilter || activeFilter) && (
+                <button
+                  onClick={() => { setPlatformFilter(''); setActiveFilter(''); setPage(1); }}
+                  className="mt-4 px-4 py-2 text-sm font-bold text-[#22438c] hover:text-[#1a3575] transition-colors"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              {selectedDevices.length > 0 && (
+                <div className="p-4 bg-red-50 border-b border-red-200 flex items-center justify-between">
+                  <span className="text-sm font-bold text-red-700">
+                    {selectedDevices.length} device{selectedDevices.length > 1 ? 's' : ''} selected
+                  </span>
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={bulkDeleteLoading}
+                    className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {bulkDeleteLoading ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete Selected
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
               <table className="w-full">
-                <thead className="bg-slate-900/50 border-b border-slate-700/50">
+                <thead className="bg-slate-50 border-b border-border">
                   <tr>
                     <th className="px-4 py-4 text-left">
                       <input
                         type="checkbox"
                         checked={selectedDevices.length === devices.length && devices.length > 0}
                         onChange={handleSelectAll}
-                        className="w-4 h-4 text-blue-600 bg-slate-700 rounded border-slate-600 focus:ring-blue-500 focus:ring-offset-0"
+                        className="w-4 h-4 text-[#22438c] bg-white border-border rounded focus:ring-[#22438c] focus:ring-offset-0"
                       />
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Device</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Browser</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Province</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Active</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Device</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Browser</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Province</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Registered</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-muted-text uppercase tracking-wider">Last Active</th>
+                    <th className="px-6 py-4 text-right text-xs font-bold text-muted-text uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700/50">
+                <tbody className="divide-y divide-border">
                   {devices.map((device) => (
-                    <tr key={device.id} className={`hover:bg-slate-700/30 transition-colors ${selectedDevices.includes(device.id) ? 'bg-blue-500/5' : ''}`}>
+                    <motion.tr
+                      key={device.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`hover:bg-slate-50 transition-colors ${selectedDevices.includes(device.id) ? 'bg-[#22438c]/5' : ''}`}
+                    >
                       <td className="px-4 py-4">
                         <input
                           type="checkbox"
                           checked={selectedDevices.includes(device.id)}
                           onChange={() => handleSelectDevice(device.id)}
-                          className="w-4 h-4 text-blue-600 bg-slate-700 rounded border-slate-600 focus:ring-blue-500 focus:ring-offset-0"
+                          className="w-4 h-4 text-[#22438c] bg-white border-border rounded focus:ring-[#22438c] focus:ring-offset-0"
                         />
                       </td>
                       <td className="px-6 py-4">
@@ -357,7 +400,7 @@ export default function DevicesPage() {
                           <span className="text-xl" title={device.platform}>
                             {getPlatformIcon(device.platform)}
                           </span>
-                          <span className="text-sm font-medium text-white capitalize">
+                          <span className="text-sm font-bold text-foreground capitalize">
                             {device.platform || 'Unknown'}
                           </span>
                         </div>
@@ -367,29 +410,29 @@ export default function DevicesPage() {
                           <span className="text-xl" title={device.browser}>
                             {getBrowserIcon(device.browser)}
                           </span>
-                          <span className="text-sm text-slate-400 capitalize">
+                          <span className="text-sm text-muted-text capitalize">
                             {device.browser || 'Unknown'}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-slate-400">
+                        <span className="text-sm text-muted-text">
                           {device.province || 'Not set'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/15 text-green-400">
-                          <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-green-400"></span>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                          <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-green-500"></span>
                           Active
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-slate-500">
+                        <span className="text-sm text-muted-text">
                           {formatDate(device.created_at)}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-slate-500">
+                        <span className="text-sm text-muted-text">
                           {formatDate(device.updated_at || device.created_at)}
                         </span>
                       </td>
@@ -398,13 +441,13 @@ export default function DevicesPage() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => setDeleteConfirm(null)}
-                              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                              className="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-foreground hover:bg-slate-100 rounded-lg transition-colors"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={() => handleDelete(device.id)}
-                              className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
+                              className="px-3 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
                             >
                               Confirm
                             </button>
@@ -412,44 +455,44 @@ export default function DevicesPage() {
                         ) : (
                           <button
                             onClick={() => setDeleteConfirm(device.id)}
-                            className="text-red-400 hover:text-red-300 text-sm font-medium hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors"
+                            className="text-red-600 hover:text-red-700 text-sm font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
                           >
                             Delete
                           </button>
                         )}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
-            </div>
+            </>
+          )}
 
-            {totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-slate-700/50 flex items-center justify-between">
-                <p className="text-sm text-slate-500">
-                  Showing page <span className="font-medium text-white">{page}</span> of <span className="font-medium text-white">{totalPages}</span>
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:bg-slate-700 hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:bg-slate-700 hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-border flex items-center justify-between">
+              <p className="text-sm text-muted-text">
+                Page <span className="font-bold text-foreground">{page}</span> of <span className="font-bold text-foreground">{totalPages}</span>
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-border rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-border rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
               </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Province } from '@/components/pwa/province-selector';
 
 type Props = {
@@ -72,33 +73,57 @@ export function LocationProvincePrompt({ isOpen, onProvinceResolved, onChooseMan
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      <div className="relative w-full max-w-sm bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-5">Set your province</h2>
-        {status === 'error' && (
-          <p className="text-sm text-red-400 mb-3">{errorMessage}</p>
-        )}
-        <div className="flex flex-col gap-2">
-          <button
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="relative w-full max-w-sm bg-card border border-border rounded-2xl shadow-xl p-6"
+      >
+        <h2 className="text-lg font-bold text-foreground mb-5">Set your province</h2>
+        <AnimatePresence>
+          {status === 'error' && (
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-sm text-red-600 mb-3 bg-red-50 p-3 rounded-lg border border-red-200"
+            >
+              {errorMessage}
+            </motion.p>
+          )}
+        </AnimatePresence>
+        <div className="flex flex-col gap-3">
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             type="button"
             disabled={status === 'loading'}
             onClick={handleUseLocation}
-            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-medium rounded-xl transition-colors"
+            className="w-full py-3 px-4 bg-[#22438c] hover:bg-[#1a3575] disabled:opacity-60 text-white font-bold rounded-xl transition-colors"
           >
             {status === 'loading' ? 'Detecting…' : 'Use my location'}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             type="button"
             disabled={status === 'loading'}
             onClick={handleManual}
-            className="w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-200 font-medium rounded-xl transition-colors"
+            className="w-full py-3 px-4 bg-white hover:bg-slate-50 border border-border text-foreground font-bold rounded-xl transition-colors"
           >
             Choose province manually
-          </button>
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

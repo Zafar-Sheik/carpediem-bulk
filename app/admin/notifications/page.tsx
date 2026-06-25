@@ -336,10 +336,11 @@ export default function NotificationsPage() {
                 </tr>
               ) : (
                 notifications.map((notification) => (
-                  <motion.tr
-                    key={notification._id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+              <motion.tr
+                key={notification._id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
                     className={`hover:bg-slate-50 transition-colors cursor-pointer ${selectedNotifications.includes(notification._id) ? 'bg-[#22438c]/5' : ''}`}
                     onClick={() => setSelectedNotification(notification)}
                   >

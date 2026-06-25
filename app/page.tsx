@@ -19,17 +19,6 @@ interface Notification {
   createdAt?: string;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: 'easeOut',
-    },
-  },
-};
 
 export default function HomePage() {
   const {
@@ -333,9 +322,9 @@ export default function HomePage() {
             {notifications.map((notification, index) => (
               <motion.div
                 key={notification._id}
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
               >
                 <NotificationCard
                   notification={notification}

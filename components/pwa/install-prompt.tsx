@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -14,11 +15,11 @@ interface BeforeInstallPromptEvent extends Event {
 
 function isMobileDevice(): boolean {
   if (typeof window === 'undefined') return false;
-  
+
   const userAgent = navigator.userAgent || navigator.vendor || '';
   const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
   const isMobileDisplay = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-  
+
   return mobileRegex.test(userAgent.toLowerCase()) || isMobileDisplay;
 }
 
@@ -112,43 +113,49 @@ export function InstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-50 p-4">
-      <div className="max-w-md mx-auto bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      className="fixed bottom-20 left-0 right-0 z-50 p-4"
+    >
+      <div className="max-w-md mx-auto bg-white border border-border rounded-xl shadow-lg overflow-hidden">
         <div className="p-4">
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-11 h-11 bg-blue-600/20 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex-shrink-0 w-11 h-11 bg-[#22438c]/5 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#22438c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
             </div>
-            
+
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-bold text-foreground">
                 Install App
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-text mt-0.5">
                 Add to your home screen for quick access
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 mt-3">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={handleInstallClick}
-              className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+              className="flex-1 py-2 px-4 bg-[#22438c] hover:bg-[#1a3575] text-white text-sm font-bold rounded-lg transition-colors"
             >
               Install
-            </button>
+            </motion.button>
             <button
               onClick={handleDismiss}
-              className="py-2 px-4 text-slate-400 hover:text-white text-sm font-medium transition-colors"
+              className="py-2 px-4 text-muted hover:text-foreground text-sm font-semibold transition-colors"
             >
               Not now
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -159,7 +166,7 @@ export function usePWAInstallable() {
   useEffect(() => {
     const checkInstallable = () => {
       if (typeof window === 'undefined') return;
-      
+
       if (window.matchMedia('(display-mode: standalone)').matches) {
         setIsInstalled(true);
         setIsInstallable(false);

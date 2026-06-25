@@ -76,7 +76,7 @@ export default function AdminLoginPage() {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
         className="relative w-full max-w-md"
       >
         <div className="bg-card border border-border rounded-2xl shadow-xl shadow-slate-200/50 p-8">

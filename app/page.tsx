@@ -19,17 +19,6 @@ interface Notification {
   createdAt?: string;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: 'easeOut',
-    },
-  },
-};
 
 export default function HomePage() {
   const {
@@ -56,7 +45,7 @@ export default function HomePage() {
   const [provinceConfirm, setProvinceConfirm] = useState<string | null>(null);
   const [isChangingProvince, setIsChangingProvince] = useState(false);
   const router = useRouter();
-  const pathname = '/';
+  const pathname: string = '/';
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -333,9 +322,9 @@ export default function HomePage() {
             {notifications.map((notification, index) => (
               <motion.div
                 key={notification._id}
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
               >
                 <NotificationCard
                   notification={notification}

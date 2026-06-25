@@ -21,17 +21,6 @@ interface Stats {
   byBrowser: Array<{ _id: string; count: number }>;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -223,9 +212,9 @@ export default function DevicesPage() {
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className={`${stat.bg} border border-border rounded-2xl p-6`}
           >
             <div className="flex items-center justify-between">
